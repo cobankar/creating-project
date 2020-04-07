@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#creating a new project
+function project() {
+	name=$1
+	extension=$2
+	payload='{"name":"'"$name"'"}'
+	
+	cd /Users/lucahuber/Documents/dev/projects
+
+	#checking if folder exists already
+	if [ -d "$name" ]
+	then
+		echo "Error: Project $name already exists."
+		return 0
+	fi
+	mkdir $name
+	cd $name
+	
+	git init
+
+	touch README.md
+	git add .
+
+	curl -H "Authorization: token $access_token" --data $payload https://api.github.com/user/repos
+
+	git remote add origin "https://github.com/cobankar/$name.git"
+
+	git commit -m "initial commit"
+	git push --set-upstream origin master
+	git push -u origin
+
+	#open the README with a custom bash prompt
+	sublime README.md
+}
